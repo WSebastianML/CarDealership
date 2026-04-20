@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'myapp',
     'core',
+    'compras',
 ]
 
 MIDDLEWARE = [
@@ -86,8 +87,8 @@ DATABASES = {
         'NAME': 'ecuawagen',
         'SERVER': 'ol_desarrollo',
         'HOST': '192.168.1.9',
-        'USER': '',
-        'PASSWORD': '',
+        'USER': 'intaco',
+        'PASSWORD': 'tcross2206',
         'ENGINE': 'django_informixdb',
         'TEST': {
             'NAME': 'test_ecuawagen',
