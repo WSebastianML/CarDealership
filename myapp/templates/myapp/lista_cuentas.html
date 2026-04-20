@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Cuentas</title>
+</head>
+<body>
+    <h1>Listado de Cuentas</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Compañía</th>
+                <th>Cuenta</th>
+                <th>Descripción</th>
+                <th>Saldo Mes 01 (DB)</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-body">
+            <tr><td colspan="4">Cargando...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+    fetch('/api/cuentas/')
+        .then(res => res.json())
+        .then(data => {
+            const cuentas = Array.isArray(data) ? data : data.results;
+            
+            const tbody = document.getElementById('tabla-body');
+            if (!cuentas || !cuentas.length) {
+                tbody.innerHTML = '<tr><td colspan="4">No se encontraron registros.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = cuentas.map(c => `
+                <tr>
+                    <td>${c.ct_compania ?? ''}</td>
+                    <td>${c.ct_cuenta ?? ''}</td>
+                    <td>${c.ct_descripcion ?? ''}</td>
+                    <td>${c.ct_db_mes01 ?? ''}</td>
+                </tr>
+            `).join('');
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('tabla-body').innerHTML =
+                '<tr><td colspan="4">Error al cargar datos.</td></tr>';
+        });
+</script>
+</body>
+</html>

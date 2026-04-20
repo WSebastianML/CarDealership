@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seleccionar Empresa — Sistema de Gestión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0a0a0a;
+      --off:     #111214;
+      --border:  #222427;
+      --muted:   #555a61;
+      --light:   #c8cdd5;
+      --white:   #f0f2f5;
+      --vw-blue: #001e50;
+      --accent:  #00b0f0;
+      --danger:  #e5001e;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow: hidden;
+    }
+
+    /* ── diagonal background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          -55deg,
+          transparent,
+          transparent 60px,
+          rgba(255,255,255,.015) 60px,
+          rgba(255,255,255,.015) 61px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── accent line top ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--danger) 0%, var(--accent) 100%);
+      z-index: 10;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 0 clamp(24px, 6vw, 80px);
+    }
+
+    /* ── header ── */
+    header {
+      padding: 36px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      animation: fadeDown .6s ease both;
+    }
+
+    .vw-mark {
+      width: 44px; height: 44px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+
+    .vw-mark svg { width: 26px; height: 26px; }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .brand-text span:first-child {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: .12em;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .brand-text span:last-child {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    /* ── main ── */
+    main {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 48px;
+      padding: 40px 0;
+    }
+
+    .heading-block {
+      animation: fadeUp .7s .1s ease both;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 7vw, 80px);
+      letter-spacing: .04em;
+      line-height: .95;
+      color: var(--white);
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--muted);
+    }
+
+    /* ── cards grid ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      max-width: 720px;
+      animation: fadeUp .7s .22s ease both;
+    }
+
+    .card {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 28px 28px 24px;
+      cursor: pointer;
+      background: var(--off);
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform .25s ease;
+    }
+
+    .card:hover { 
+      border-color: #333840; 
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(0,0,0,.5);
+    }
+    .card:hover::before { transform: scaleY(1); }
+
+    .card.selected {
+      border-color: var(--accent);
+      background: #0d1520;
+      box-shadow: 0 0 0 1px var(--accent), 0 16px 40px rgba(0,176,240,.12);
+    }
+    .card.selected::before { transform: scaleY(1); }
+
+    .card-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 56px;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 20px;
+      transition: color .2s;
+    }
+    .card:hover .card-number,
+    .card.selected .card-number { color: #1a2535; }
+
+    .card-label {
+      font-size: 10px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: .06em;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .card-check {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 22px; height: 22px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: grid; place-items: center;
+      transition: all .2s;
+    }
+    .card.selected .card-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .card-check svg {
+      width: 11px; opacity: 0;
+      transition: opacity .2s;
+    }
+    .card.selected .card-check svg { opacity: 1; }
+
+    /* hidden radio */
+    .card input[type="radio"] {
+      position: absolute; opacity: 0; pointer-events: none;
+    }
+
+    /* ── form & button ── */
+    form { display: contents; }
+
+    .actions {
+      animation: fadeUp .7s .34s ease both;
+    }
+
+    .btn-enter {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--accent);
+      color: var(--black);
+      border: none;
+      border-radius: 3px;
+      padding: 14px 32px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s, transform .15s, opacity .2s;
+      opacity: .35;
+      pointer-events: none;
+    }
+
+    .btn-enter.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .btn-enter.active:hover {
+      background: #33c0f3;
+      transform: translateX(4px);
+    }
+
+    .btn-enter svg { width: 16px; transition: transform .2s; }
+    .btn-enter:hover svg { transform: translateX(4px); }
+
+    /* ── footer ── */
+    footer {
+      padding: 0 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeUp .7s .44s ease both;
+    }
+
+    .footer-left {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .1em;
+    }
+    .footer-left strong { color: var(--light); font-weight: 500; }
+
+    .status-dot {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 11px; color: var(--muted);
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #2ecc71;
+      box-shadow: 0 0 6px #2ecc71;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .4; }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div class="vw-mark">
+      <!-- VW logo simplified -->
+      <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="19" cy="19" r="18" stroke="#00b0f0" stroke-width="1.5"/>
+        <path d="M10 12l5 10 4-8 4 8 5-10" stroke="#f0f2f5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span>Sistema de Gestión</span>
+      <span>Volkswagen Ecuador · Concesionarias</span>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="heading-block">
+      <p class="eyebrow">Acceso al sistema</p>
+      <h1>Selecciona<br/><em>tu empresa</em></h1>
+    </div>
+
+    <form method="POST" action="" id="companyForm">
+      {% csrf_token %}
+
+      <div class="cards">
+
+        <label class="card" id="card-ecuawagen" onclick="selectCard('ecuawagen')">
+          <input type="radio" name="company" value="ecuawagen" id="r-ecuawagen">
+          <div class="card-check">
+            <svg viewBox="0 0 12 10" fill="none">
+              <path d="M1 5l3.5 3.5L11 1" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="card-number">01</div>
+          <div class="card-label">Concesionaria</div>
+          <div class="card-name">Ecuawagen</div>
+          <div class="card-sub">Quito · Base de datos principal</div>
+        </label>
+
+        <label class="card" id="card-germanmoto" onclick="selectCard('germanmoto')">
+          <input type="radio" name="company" value="germanmoto" id="r-germanmoto">
+          <div class="card-check">
+            <svg viewBox="0 0 12 10" fill="none">
+              <path d="M1 5l3.5 3.5L11 1" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="card-number">02</div>
+          <div class="card-label">Concesionaria</div>
+          <div class="card-name">German Motors</div>
+          <div class="card-sub">Quito . Base de datos German Motors</div>
+        </label>
+
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn-enter" id="btnEnter">
+          Ingresar al sistema
+          <svg viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-left">
+      Versión <strong>1.0.0</strong> · Solo personal autorizado
+    </span>
+    <span class="status-dot">
+      <span class="dot"></span>
+      Servidores en línea
+    </span>
+  </footer>
+
+</div>
+
+<script>
+  function selectCard(value) {
+    // Deselect all
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    // Select clicked
+    document.getElementById('card-' + value).classList.add('selected');
+    document.getElementById('r-' + value).checked = true;
+    // Enable button
+    const btn = document.getElementById('btnEnter');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

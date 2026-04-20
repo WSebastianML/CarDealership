@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtrado de Compras</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        select { padding: 8px; width: 100%; max-width: 400px; margin-bottom: 20px; display: block; }
+        .container { max-width: 600px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Filtrado de Compras</h1>
+
+        <!-- Combo de Divisiones -->
+        <label for="select-division">Seleccione División:</label>
+        <select id="select-division">
+            <option value="">Cargando divisiones...</option>
+        </select>
+
+        <!-- Combo de Tipos de Compra (Nuevo) -->
+        <label for="select-tipos">Tipos de Compra Disponibles:</label>
+        <select id="select-tipos" disabled>
+            <option value="">Seleccione primero una división...</option>
+        </select>
+    </div>
+
+    <script>
+        const selectDiv = document.getElementById('select-division');
+        const selectTipos = document.getElementById('select-tipos');
+
+        // 1. Cargar las divisiones al iniciar
+        fetch('/api/ejemplo/')
+            .then(res => {
+                if (!res.ok) throw new Error('Error al cargar divisiones');
+                return res.json();
+            })
+            .then(data => {
+                const divisiones = Array.isArray(data) ? data : data.results;
+                selectDiv.innerHTML = '<option value="">Seleccione una división...</option>';
+                divisiones.forEach(div => {
+                    const option = document.createElement('option');
+                    option.value = div.co_div;
+                    option.textContent = div.co_nomext || div.co_div;
+                    selectDiv.appendChild(option);
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                selectDiv.innerHTML = '<option value="">Error al cargar datos</option>';
+            });
+
+        // 2. Escuchar cuando el usuario cambie la división
+        selectDiv.addEventListener('change', function() {
+            const divId = this.value;
+
+            // Resetear el combo de tipos
+            selectTipos.innerHTML = '<option value="">Seleccione un tipo...</option>';
+            
+            if (!divId) {
+                selectTipos.disabled = true;
+                selectTipos.innerHTML = '<option value="">Seleccione primero una división...</option>';
+                return;
+            }
+
+            selectTipos.disabled = false;
+            selectTipos.innerHTML = '<option value="">Buscando tipos...</option>';
+
+            // 3. Llamada filtrada para obtener los tipos de compra
+            fetch(`/api/tipos-compra/?division=${divId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Error al cargar tipos de compra');
+                    return res.json();
+                })
+                .then(data => {
+                    const tipos = Array.isArray(data) ? data : data.results;
+                    
+                    if (tipos.length === 0) {
+                        selectTipos.innerHTML = '<option value="">No hay tipos disponibles</option>';
+                        return;
+                    }
+
+                    // Llenar el combo con los tipos recibidos
+                    let optionsHTML = '<option value="">Seleccione un tipo de compra...</option>';
+                    tipos.forEach(t => {
+                        const descripcion = t.to_descrip || 'Sin descripción';
+                        const idTipo = t.to_tipo || '';
+                        optionsHTML += `<option value="${idTipo}">${descripcion} (${idTipo})</option>`;
+                    });
+                    selectTipos.innerHTML = optionsHTML;
+                })
+                .catch(err => {
+                    console.error(err);
+                    selectTipos.innerHTML = '<option value="">Error al conectar con la API</option>';
+                });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Acceso — {{ request.session.company_name }}</title>
+  <link rel="preconnect" href="https://googleapis.com">
+  <link href="https://googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0a0a0a;
+      --off:     #111214;
+      --border:  #222427;
+      --muted:   #555a61;
+      --light:   #c8cdd5;
+      --white:   #f0f2f5;
+      --accent:  #00b0f0;
+      --danger:  #e5001e;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fondo diagonal */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(-55deg, transparent, transparent 60px, rgba(255,255,255,.01) 60px, rgba(255,255,255,.01) 61px);
+      z-index: 0;
+    }
+
+    /* Línea superior */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--danger) 0%, var(--accent) 100%);
+      z-index: 10;
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 400px;
+      padding: 40px;
+      background: var(--off);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      animation: fadeUp .6s ease both;
+    }
+
+    .header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      letter-spacing: .04em;
+      line-height: 1;
+      color: var(--white);
+    }
+
+    .company-name {
+        color: var(--muted);
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 4px;
+    }
+
+    /* Formulario */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      background: var(--black);
+      border: 1px solid var(--border);
+      padding: 14px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      border-radius: 4px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 16px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background: var(--accent);
+      color: var(--black);
+      box-shadow: 0 0 20px rgba(0, 176, 240, 0.3);
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--white);
+    }
+
+    .error-msg {
+        background: rgba(229, 0, 30, 0.1);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 12px;
+        font-size: 13px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="header">
+      <p class="eyebrow">Autenticación</p>
+      <h1>Conectar</h1>
+      <p class="company-name">{{ request.session.company_name }}</p>
+    </div>
+
+    {% if error %}
+    <div class="error-msg">
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Usuario Informix</label>
+        <input type="text" name="username" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" name="password" required>
+      </div>
+
+      <button type="submit" class="btn-submit">Establecer Conexión</button>
+    </form>
+
+    <a href="{% url 'company_select' %}" class="back-link">← Cambiar de Empresa</a>
+  </div>
+
+</body>
+</html>

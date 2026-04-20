@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Django
+db.sqlite3
+/static/
+/media/
+.env
+local_settings.py
+
+# Informix & Drivers (IBM_DB / Client SDK)
+# Archivos de registro y temporales que suelen generar los drivers de IBM
+*.log
+*.clog
+*.trc
+/db2dump/
+/informix_logs/
+
+# DRF & Herramientas de desarrollo
+.vscode/
+.idea/
+*.log
+.DS_Store
+
+# Distribución / Empaquetado
+dist/
+build/
+*.egg-info/
