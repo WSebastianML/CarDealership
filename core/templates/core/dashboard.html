@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Dashboard — {{ company.name }}</title>
-  <link href="https://googleapis.com" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&family=Bebas+Neue&display=swap" rel="stylesheet">
   <style>
     :root {
       --black: #0a0a0a; --off: #111214; --border: #222427;
@@ -40,6 +40,16 @@
       transition: all 0.3s;
     }
     .btn:hover { border-color: var(--accent); background: rgba(0, 176, 240, 0.05); }
+    select option {
+        background-color: var(--off);
+        color: var(--white);
+        padding: 10px;
+    }
+    /* Estilo para el select cuando está deshabilitado */
+    select:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -55,6 +65,7 @@
   </nav>
 
   <main>
+    {% block content %}
     <div class="welcome-card">
       <p class="eyebrow">Panel de Control</p>
       <h1>Bienvenido a {{ company.name }}</h1>
@@ -62,10 +73,11 @@
       
       <div class="actions">
         <a href="{% url 'cuentas_html' %}" class="btn">Ver Catálogo de Cuentas</a>
-        <a href="#" class="btn">Orden de compra</a>
+        <a href="{% url 'compras_view' %}" class="btn">Orden de compra</a>
       </div>
 
     </div>
+    {% endblock %}
   </main>
 </body>
 </html>

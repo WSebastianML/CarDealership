@@ -24,8 +24,9 @@ import os
 urlpatterns = [
     path('', company_select, name='company_select'),
     path('login-db/', company_login, name='company_login'),
-    path('myapp/', include('myapp.urls')),
     path('dashboard/', dashboard, name='dashboard'),
+    path('myapp/', include('myapp.urls')),
+    path('compras/', include('compras.urls')),
 ]
 
 if settings.DEBUG:

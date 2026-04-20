@@ -25,3 +25,5 @@ class Ocxxt004ViewSet(viewsets.ModelViewSet):
             
         return queryset
 
+def compras_home(request):
+    return render(request, 'compras/compras_select.html')

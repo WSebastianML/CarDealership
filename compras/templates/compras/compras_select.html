@@ -1,0 +1,83 @@
+{% extends "core/dashboard.html" %}
+
+{% block content %}
+
+<div class="welcome-card">
+    <p class="eyebrow">Módulo de Compras</p>
+    <h1>Selección de Parámetros</h1>
+    
+    <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 30px; text-align: left;">
+        <div class="form-group">
+            <label>División</label>
+            <select id="select-division" class="btn" style="width: 100%; text-align: left; background: var(--black); color: white;">
+                <option value="">Cargando divisiones...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de Compra</label>
+            <select id="select-compra" class="btn" style="width: 100%; text-align: left; background: var(--black); color: white;" disabled>
+                <option value="">Primero seleccione una división...</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectDiv = document.getElementById('select-division');
+    const selectComp = document.getElementById('select-compra');
+
+
+    const baseApiUrl = '/compras/api/';
+
+    fetch(`${baseApiUrl}divisiones/`) 
+        .then(res => res.json())
+        .then(data => {
+            selectDiv.innerHTML = '<option value="">Seleccione división...</option>';
+            
+            // Manejo de paginación de DRF (si data.results existe, lo usamos)
+            const items = data.results ? data.results : data; 
+            
+            items.forEach(item => {
+                // Usamos los campos específicos de tus modelos Ciatt003
+                // co_descri para el texto y co_codigo para el valor (ID)
+                let opt = new Option(item.co_nomext, item.co_div);
+                selectDiv.add(opt);
+            });
+        })
+        .catch(err => console.error("Error cargando divisiones:", err));
+
+    // 2. Cargar Tipos de Compra al cambiar División
+    selectDiv.addEventListener('change', function() {
+        const divId = this.value;
+        if (!divId) {
+            selectComp.disabled = true;
+            selectComp.innerHTML = '<option value="">Primero seleccione una división...</option>';
+            return;
+        }
+
+        selectComp.disabled = false;
+        selectComp.innerHTML = '<option value="">Cargando tipos...</option>';
+
+        // Filtramos usando el query param ?division= que definiste en el ViewSet
+        fetch(`${baseApiUrl}tipos-compra/?division=${divId}`)
+            .then(res => res.json())
+            .then(data => {
+                selectComp.innerHTML = '<option value="">Seleccione tipo de compra...</option>';
+                
+                const items = data.results ? data.results : data;
+                items.forEach(item => {
+                    // Usamos los campos específicos de tu modelo Ocxxt004
+                    // to_descri para el texto y to_tipo para el valor
+                    let opt = new Option(item.to_descrip, item.to_division);
+                    selectComp.add(opt);
+                });
+            })
+            .catch(err => console.error("Error cargando tipos de compra:", err));
+    });
+});
+</script>
+
+{% endblock %}
