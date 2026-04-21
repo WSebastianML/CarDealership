@@ -1,83 +1,176 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Dashboard — {{ company.name }}</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&family=Bebas+Neue&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --black: #0a0a0a; --off: #111214; --border: #222427;
-      --muted: #555a61; --white: #f0f2f5; --accent: #00b0f0; --danger: #e5001e;
-    }
-    body {
-      background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif;
-      margin: 0; display: flex; flex-direction: column; min-height: 100vh;
-    }
-    body::after {
-      content: ''; position: fixed; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--danger) 0%, var(--accent) 100%);
-    }
-    nav {
-      padding: 20px 60px; border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center; background: var(--off);
-    }
-    .logo-container img { height: 40px; filter: grayscale(1) invert(1); opacity: 0.8; }
-    .company-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; }
+    <meta charset="UTF-8">
+    <title>Dashboard — {{ company.name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans&family=Bebas+Neue&display=swap" rel="stylesheet">
     
-    main { padding: 60px; flex-grow: 1; text-align: center; }
-    .welcome-card {
-      max-width: 800px; margin: 0 auto; border: 1px solid var(--border);
-      padding: 40px; background: var(--off); border-radius: 4px;
-    }
-    .eyebrow { color: var(--accent); text-transform: uppercase; font-size: 12px; letter-spacing: 2px; }
-    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 64px; margin: 10px 0; }
-    .user-info { color: var(--muted); font-size: 14px; margin-bottom: 30px; }
-    
-    .actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .btn {
-      padding: 20px; border: 1px solid var(--border); color: var(--white);
-      text-decoration: none; font-family: 'Bebas Neue', sans-serif; font-size: 18px;
-      transition: all 0.3s;
-    }
-    .btn:hover { border-color: var(--accent); background: rgba(0, 176, 240, 0.05); }
-    select option {
-        background-color: var(--off);
-        color: var(--white);
-        padding: 10px;
-    }
-    /* Estilo para el select cuando está deshabilitado */
-    select:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-  </style>
+    <style>
+        /* Variables base y estructura común */
+        :root {
+            --white: #f0f2f5;
+            --muted: #888e96;
+            --transition: all 0.3s ease;
+        }
+
+        /* TEMA ECUAWAGEN (Negros y Rojos) */
+        .theme-ecuawagen {
+            --bg-main: #0a0a0a;
+            --bg-card: #161616;
+            --border: #2a2a2a;
+            --accent: #e5001e; /* Rojo */
+            --gradient: linear-gradient(90deg, #e5001e 0%, #000000 100%);
+        }
+
+        /* TEMA GERMANMOTO (Azules) */
+        .theme-germanmoto {
+            --bg-main: #001a33; /* Azul muy oscuro */
+            --bg-card: #002b54; /* Azul intermedio */
+            --border: #004080;
+            --accent: #00b0f0; /* Celeste */
+            --gradient: linear-gradient(90deg, #00b0f0 0%, #001a33 100%);
+        }
+
+        /* Estilos usando las variables dinámicas */
+        body {
+            background: var(--bg-main);
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            z-index: 100;
+        }
+
+        nav {
+            padding: 20px 60px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+        }
+
+        .logo-container img {
+            height: 40px;
+            filter: grayscale(1) invert(1);
+            opacity: 0.9;
+        }
+
+        .company-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        main {
+            padding: 60px;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .welcome-card {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid var(--border);
+            padding: 40px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 64px;
+            margin: 10px 0;
+        }
+
+        .user-info {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 20px;
+            border: 1px solid var(--border);
+            color: var(--white);
+            text-decoration: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 18px;
+            transition: var(--transition);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        select option {
+            background-color: var(--bg-card);
+            color: var(--white);
+        }
+    </style>
 </head>
-<body>
-  <nav>
-    <div class="logo-container">
-      {% if company.logo %}
-        <img src="{{ company.logo }}" alt="Logo">
-      {% else %}
-        <span class="company-title">{{ company.name }}</span>
-      {% endif %}
-    </div>
-    <a href="{% url 'company_select' %}" style="color: var(--muted); font-size: 12px; text-decoration: none; text-transform: uppercase;">Salir / Cambiar</a>
-  </nav>
 
-  <main>
-    {% block content %}
-    <div class="welcome-card">
-      <p class="eyebrow">Panel de Control</p>
-      <h1>Bienvenido a {{ company.name }}</h1>
-      <p class="user-info">Conectado como: <strong>{{ db_user }}</strong></p>
-      
-      <div class="actions">
-        <a href="{% url 'cuentas_html' %}" class="btn">Ver Catálogo de Cuentas</a>
-        <a href="{% url 'compras_view' %}" class="btn">Orden de compra</a>
-      </div>
+<body class="{% if company.name == 'Ecuawagen' %}theme-ecuawagen{% elif company.name == 'GermanMoto' %}theme-germanmoto{% endif %}">
 
-    </div>
-    {% endblock %}
-  </main>
+    <nav>
+        <div class="logo-container">
+            {% if company.logo %}
+                <img src="{{ company.logo }}" alt="Logo">
+            {% else %}
+                <span class="company-title">{{ company.name }}</span>
+            {% endif %}
+        </div>
+        <a href="{% url 'company_select' %}" style="color: var(--muted); font-size: 11px; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;">
+            Salir / Cambiar Empresa
+        </a>
+    </nav>
+
+    <main>
+        {% block content %}
+        <div class="welcome-card">
+            <p class="eyebrow">Panel de Control</p>
+            <h1>Bienvenido a {{ company.name }}</h1>
+            <p class="user-info">Conectado como: <strong>{{ db_user }}</strong></p>
+            
+            <div class="actions">
+                <a href="{% url 'cuentas_html' %}" class="btn">Ver Catálogo de Cuentas</a>
+                <a href="{% url 'compras_view' %}" class="btn">Orden de compra</a>
+            </div>
+        </div>
+        {% endblock %}
+    </main>
+
 </body>
 </html>
