@@ -352,33 +352,22 @@
       {% csrf_token %}
 
       <div class="cards">
-
-        <label class="card" id="card-ecuawagen" onclick="selectCard('ecuawagen')">
-          <input type="radio" name="company" value="ecuawagen" id="r-ecuawagen">
+        {% for company in companies %}
+        <label class="card" id="card-{{ company.key }}" onclick="selectCard('{{ company.key }}')">
+          <input type="radio" name="company" value="{{ company.key }}" id="r-{{ company.key }}">
           <div class="card-check">
             <svg viewBox="0 0 12 10" fill="none">
               <path d="M1 5l3.5 3.5L11 1" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <div class="card-number">01</div>
+          <div class="card-number">{{ forloop.counter|stringformat:"02d" }}</div>
           <div class="card-label">Concesionaria</div>
-          <div class="card-name">Ecuawagen</div>
-          <div class="card-sub">Quito · Base de datos principal</div>
+          <div class="card-name">{{ company.name }}</div>
+          <div class="card-sub">{{ company.db_host }} · {{ company.db_name }}</div>
         </label>
-
-        <label class="card" id="card-germanmoto" onclick="selectCard('germanmoto')">
-          <input type="radio" name="company" value="germanmoto" id="r-germanmoto">
-          <div class="card-check">
-            <svg viewBox="0 0 12 10" fill="none">
-              <path d="M1 5l3.5 3.5L11 1" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="card-number">02</div>
-          <div class="card-label">Concesionaria</div>
-          <div class="card-name">German Motors</div>
-          <div class="card-sub">Quito . Base de datos German Motors</div>
-        </label>
-
+        {% empty %}
+        <p style="color: var(--muted); font-size: 13px;">No hay empresas registradas.</p>
+        {% endfor %}
       </div>
 
       <div class="actions">

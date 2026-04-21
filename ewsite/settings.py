@@ -10,7 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 from pathlib import Path
-
+import sqlite3
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -80,41 +81,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3'
-    },
-
-    'ecuawagen': {
-        'DSN': 'DNSdesarrollo',
-        'NAME': 'ecuawagen',
-        'SERVER': 'ol_desarrollo',
-        'HOST': '192.168.1.9',
-        'USER': '',
-        'PASSWORD': '',
-        'ENGINE': 'django_informixdb',
-        'TEST': {
-            'NAME': None,
-        },
-        'OPTIONS': {
-            'MIGRATION_MODULES': {},
-            'MIGRATE': False,
-        }
-    },
-
-    'germanmoto': {
-        'DSN': 'DNSdesarrollo',
-        'NAME': 'germanmoto',
-        'SERVER': 'ol_desarrollo',
-        'HOST': '192.168.1.9',
-        'USER': '',
-        'PASSWORD': '',
-        'ENGINE': 'django_informixdb',
-        'TEST': {
-            'NAME': None,
-        },
-        'OPTIONS': {
-            'MIGRATION_MODULES': {},
-            'MIGRATE': False,
-        }
-    },
+    }
 }
 
 DATABASE_ROUTERS = ['core.routers.CompanyDBRouter']
@@ -125,6 +92,44 @@ MIGRATION_MODULES = {
 }
 
 
+_db_path = BASE_DIR / 'db.sqlite3'
+if os.path.exists(_db_path):
+    try:
+        _conn = sqlite3.connect(_db_path)
+        _cursor = _conn.execute(
+            "SELECT db_alias, db_engine, db_dsn, db_name, db_server, db_host, db_port FROM core_company WHERE activa=1"
+        )
+        for _row in _cursor.fetchall():
+            _alias, _engine, _dsn, _name, _server, _host, _port = _row
+
+            if _engine == 'django_informixdb':
+                DATABASES[_alias] = {
+                    'ENGINE':   'django_informixdb',
+                    'DSN':      _dsn,
+                    'NAME':     _name,
+                    'SERVER':   _server,
+                    'HOST':     _host,
+                    'USER':     '',
+                    'PASSWORD': '',
+                    'TEST':     {'NAME': None},
+                    'OPTIONS':  {'MIGRATE': False},
+                }
+            else:
+                # PostgreSQL, MySQL, Oracle, SQL Server
+                DATABASES[_alias] = {
+                    'ENGINE':   _engine,
+                    'NAME':     _name,
+                    'HOST':     _host,
+                    'PORT':     _port or '',
+                    'USER':     '',
+                    'PASSWORD': '',
+                    'TEST':     {'NAME': None},
+                    'OPTIONS':  {'MIGRATE': False},
+                }
+        _conn.close()
+    except Exception:
+        pass
+        
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 

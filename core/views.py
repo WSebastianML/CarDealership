@@ -40,17 +40,19 @@ def company_login(request):
             company = Company.objects.get(db_alias=db_alias)
             conn = connections[db_alias]
 
-            print("HOST:", company.db_host)
-            print("DSN:", company.db_dsn)
-            print("SERVER:", company.db_server)
-
-            conn.settings_dict['HOST']     = company.db_host
-            conn.settings_dict['DSN']     = company.db_dsn
-            conn.settings_dict['SERVER'] = company.db_server
-            conn.settings_dict['NAME']     = company.db_name
             conn.settings_dict['USER']     = user
             conn.settings_dict['PASSWORD'] = pw
-            conn.settings_dict['ENGINE'] = 'django_informixdb'
+
+            if company.db_engine == 'django_informixdb':
+                conn.settings_dict['DSN']     = company.db_dsn
+                conn.settings_dict['SERVER'] = company.db_server
+
+            conn.settings_dict['HOST']     = company.db_host            
+            conn.settings_dict['NAME']     = company.db_name
+
+            if company.db_port:
+                conn.settings_dict['PORT'] = str(company.db_port)
+
 
             conn.close()
             conn.ensure_connection()
