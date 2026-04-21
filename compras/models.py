@@ -27,7 +27,7 @@ class Ciatt003(models.Model):
         managed = False
         db_table = 'ciatt003'
 
-
+# Tipos de ordenes de compra según el tipo de división
 class Ocxxt004(models.Model):
     to_cia = models.CharField(blank=True, null=True, max_length=60)
     to_division = models.CharField(blank=True, null=True, max_length=60)
@@ -37,3 +37,16 @@ class Ocxxt004(models.Model):
     class Meta:
         managed = False
         db_table = 'ocxxt004'
+
+# Solicitantes de ordenes de compra
+class Ocxxt006(models.Model):
+    so_cia = models.CharField(blank=True, null=True, max_length=60)
+    so_codigo = models.CharField(primary_key=True, blank=True, null=False, max_length=60)
+    so_nombres = models.CharField(blank=True, null=True, max_length=60)
+    so_fecalta = models.DateTimeField()
+    so_estado = models.CharField(blank=True, null=True, max_length=60)
+
+    class Meta:
+        managed = False
+        db_table = 'ocxxt006'
+        unique_together = (('so_cia', 'so_codigo'),)

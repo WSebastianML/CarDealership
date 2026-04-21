@@ -1,7 +1,7 @@
 from rest_framework import viewsets
-from .models import Ciatt003, Ocxxt004
+from .models import Ciatt003, Ocxxt004, Ocxxt006
 from django.shortcuts import render
-from .serializers import Ciatt003Serializer, Ocxxt004Serializer
+from .serializers import Ciatt003Serializer, Ocxxt004Serializer, Ocxxt006Serializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -24,6 +24,12 @@ class Ocxxt004ViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(to_division=division_seleccionada)
             
         return queryset
+
+class Ocxxt006ViewSet(viewsets.ModelViewSet):
+    serializer_class = Ocxxt006Serializer
+    
+    def get_queryset(self):
+        return Ocxxt006.objects.filter(so_estado='A')
 
 def compras_home(request):
     return render(request, 'compras/compras_select.html')

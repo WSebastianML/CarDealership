@@ -8,12 +8,14 @@
 from django.db import models
 
 
-class Ocxxt004(models.Model):
-    to_cia = models.CharField(blank=True, null=True)
-    to_division = models.CharField(blank=True, null=True)
-    to_tipo = models.CharField(blank=True, null=True)
-    to_descrip = models.CharField(blank=True, null=True)
+class Ocxxt006(models.Model):
+    so_cia = models.CharField(blank=True, null=True)
+    so_codigo = models.CharField(blank=True, null=True)
+    so_nombres = models.CharField(blank=True, null=True)
+    so_fecalta = models.DateTimeField()
+    so_estado = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'ocxxt004'
+        db_table = 'ocxxt006'
+        unique_together = (('so_cia', 'so_codigo'),)
