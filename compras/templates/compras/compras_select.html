@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const items = data.results ? data.results : data;
                 items.forEach(item => {
                     // Usamos los campos específicos de tu modelo Ocxxt006
-                    // so_nombre para el texto y so_codigo para el valor
-                    let opt = new Option(item.so_nombre, item.so_codigo);
+                    // so_nombres para el texto y so_codigo para el valor
+                    let opt = new Option(item.so_nombres, item.so_codigo);
                     selectSol.add(opt);
                 });
             })
