@@ -2,7 +2,7 @@
 from core.db_context import get_db
 
 class CompanyDBRouter:
-    CORE_APPS = {'admin', 'auth', 'contenttypes', 'sessions'}
+    CORE_APPS = {'admin', 'auth', 'contenttypes', 'sessions', 'core'}
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.CORE_APPS:
@@ -16,6 +16,4 @@ class CompanyDBRouter:
         return True
 
     def allow_migrate(self, db, app_label, **hints):
-        if app_label in self.CORE_APPS:
-            return db == 'default'
-        return True
+        return db == 'default'

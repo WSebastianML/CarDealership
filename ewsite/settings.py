@@ -87,14 +87,15 @@ DATABASES = {
         'NAME': 'ecuawagen',
         'SERVER': 'ol_desarrollo',
         'HOST': '192.168.1.9',
-        'USER': 'intaco',
-        'PASSWORD': 'tcross2206',
+        'USER': '',
+        'PASSWORD': '',
         'ENGINE': 'django_informixdb',
         'TEST': {
-            'NAME': 'test_ecuawagen',
+            'NAME': None,
         },
         'OPTIONS': {
             'MIGRATION_MODULES': {},
+            'MIGRATE': False,
         }
     },
 
@@ -107,10 +108,11 @@ DATABASES = {
         'PASSWORD': '',
         'ENGINE': 'django_informixdb',
         'TEST': {
-            'NAME': 'test_generalmotors',
+            'NAME': None,
         },
         'OPTIONS': {
             'MIGRATION_MODULES': {},
+            'MIGRATE': False,
         }
     },
 }

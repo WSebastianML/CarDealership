@@ -2,71 +2,70 @@ from django.shortcuts import render
 from django.db import connections, OperationalError
 from django.contrib import messages 
 from django.shortcuts import render, redirect
+from .models import Company
 
-COMPANIES = {
-    'ecuawagen': {
-        'name': 'Ecuawagen',
-        'db': 'ecuawagen',
-        'logo': '/static/ecuawagen.png',
-    },
-    'germanmoto': {
-        'name': 'GermanMoto',
-        'db': 'germanmoto',
-        'logo': '/static/germanmotors.png',
-    }
-}
 
 def company_select(request):
+
+    companies = Company.objects.filter(activa = True)
+
     if request.method == 'POST':
         company_key = request.POST.get('company')
-        if company_key in COMPANIES:
-            request.session['company_key'] = company_key              
-            request.session['company_db']   = COMPANIES[company_key]['db']
-            request.session['company_name'] = COMPANIES[company_key]['name']
+
+        try:
+            company = Company.objects.get(key=company_key, activa=True)
+            request.session['company_key']  = company.key
+            request.session['company_db']   = company.db_alias
+            request.session['company_name'] = company.name
             return redirect('company_login')
 
-    return render(request, 'core/company_select.html', {'companies': COMPANIES})
+        except Company.DoesNotExist:
+            pass
+
+    return render(request, 'core/company_select.html', {'companies': companies})
 
 def company_login(request):
+
+    db_alias = request.session.get('company_db')
+
+    if not db_alias:
+        return redirect('company_select')
+
     if request.method == 'POST':
         user = request.POST.get('username')
         pw = request.POST.get('password')
-        db_alias = request.session.get('company_db')
 
-        if not db_alias:
-            return redirect('company_select')
 
-        # --- PRUEBA DE CONEXIÓN DINÁMICA ---
         try:
-            # 1. Obtenemos el objeto de conexión configurado en settings.py
+            company = Company.objects.get(db_alias=db_alias)
             conn = connections[db_alias]
 
-            # 2. Inyectamos temporalmente las credenciales del formulario
-            # Guardamos las originales para restaurar si es necesario
-            original_user = conn.settings_dict.get('USER')
-            original_pass = conn.settings_dict.get('PASSWORD')
-            
-            conn.settings_dict['USER'] = user
+            print("HOST:", company.db_host)
+            print("DSN:", company.db_dsn)
+            print("SERVER:", company.db_server)
+
+            conn.settings_dict['HOST']     = company.db_host
+            conn.settings_dict['DSN']     = company.db_dsn
+            conn.settings_dict['SERVER'] = company.db_server
+            conn.settings_dict['NAME']     = company.db_name
+            conn.settings_dict['USER']     = user
             conn.settings_dict['PASSWORD'] = pw
+            conn.settings_dict['ENGINE'] = 'django_informixdb'
 
-            # 3. Forzamos el cierre de cualquier conexión vieja e intentamos abrir una nueva
             conn.close()
-            conn.ensure_connection() 
+            conn.ensure_connection()
 
-            # SI LLEGA AQUÍ, LA CONEXIÓN FUE EXITOSA
             request.session['db_user'] = user
             request.session['db_pass'] = pw
-            messages.success(request, "Conexión exitosa a Informix.")
+            messages.success(request, "Conexión exitosa.")
             return redirect('dashboard')
 
+        except Company.DoesNotExist:
+            error = "Empresa no encontrada en la configuración."
+            return render(request, 'core/login_informix.html', {'error': error})
         except OperationalError as e:
-            # SI FALLA (Usuario/Password incorrectos, etc.)
-            # Restauramos valores (opcional)
-            conn.settings_dict['USER'] = original_user
-            conn.settings_dict['PASSWORD'] = original_pass
-            
-            error_msg = f"Error de autenticación en {db_alias}: Credenciales inválidas."
-            return render(request, 'core/login_informix.html', {'error': error_msg})
+            error = f"Credenciales inválidas para {db_alias}."
+            return render(request, 'core/login_informix.html', {'error': error})
 
     return render(request, 'core/login_informix.html')
 
@@ -79,8 +78,13 @@ def dashboard(request):
     if not company_key or not request.session.get('db_user'):
         return redirect('company_select')
     
+    try:
+        company = Company.objects.get(key=company_key)  # ← desde SQLite
+    except Company.DoesNotExist:
+        return redirect('company_select')
+
     context = {
-        'company': COMPANIES.get(company_key),
+        'company': company,
         'db_user': request.session.get('db_user')
     }
     return render(request, 'core/dashboard.html', context)
