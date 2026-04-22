@@ -23,7 +23,14 @@
 
         <div class="form-group">
             <label>Solicitante</label>
-            <select id="select-solicitante" class="btn" style="width: 100%; text-align: left; background: var(--black); color: white;" disabled>
+            <select id="select-solicitante" class="btn" style="width: 100%; text-align: left; background: var(--black); color: white;">
+                <option value="">Primero seleccione un tipo de compra...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de Crédito</label>
+            <select id="select-credito" class="btn" style="width: 100%; text-align: left; background: var(--black); color: white;">
                 <option value="">Primero seleccione un tipo de compra...</option>
             </select>
         </div>
@@ -36,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectDiv = document.getElementById('select-division');
     const selectComp = document.getElementById('select-compra');
     const selectSol = document.getElementById('select-solicitante');
+    const selectCred = document.getElementById('select-credito');
 
     const baseApiUrl = '/compras/api/';
 
@@ -48,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const items = data.results ? data.results : data; 
             
             items.forEach(item => {
-                // Usamos los campos específicos de tus modelos Ciatt003
                 // co_descri para el texto y co_codigo para el valor (ID)
                 let opt = new Option(item.co_nomext, item.co_div);
                 selectDiv.add(opt);
@@ -68,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selectComp.disabled = false;
         selectComp.innerHTML = '<option value="">Cargando tipos...</option>';
 
-        // Filtramos usando el query param ?division= que definiste en el ViewSet
+        // Filtramos usando el query param ?division= 
         fetch(`${baseApiUrl}tipos-compra/?division=${divId}`)
             .then(res => res.json())
             .then(data => {
@@ -76,7 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const items = data.results ? data.results : data;
                 items.forEach(item => {
-                    // Usamos los campos específicos de tu modelo Ocxxt004
                     // to_descri para el texto y to_tipo para el valor
                     let opt = new Option(item.to_descrip, item.to_division);
                     selectComp.add(opt);
@@ -85,34 +91,33 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(err => console.error("Error cargando tipos de compra:", err));
     });
 
-    // 3. Cargar Solicitantes al cambiar Tipo de Compra
-    selectComp.addEventListener('change', function() {
-        const tipoId = this.value;
-        if (!tipoId) {
-            selectSol.disabled = true;
-            selectSol.innerHTML = '<option value="">Primero seleccione un tipo de compra...</option>';
-            return;
-        }
+    // 3. Cargar TODOS los Solicitantes 
+    fetch(`${baseApiUrl}solicitantes/`)
+        .then(res => res.json())
+        .then(data => {
+            selectSol.innerHTML = '<option value="">Seleccione solicitante...</option>';
+            const items = data.results ? data.results : data;
+            items.forEach(item => {
+                let opt = new Option(item.so_nombres, item.so_codigo);
+                selectSol.add(opt);
+            });
+        })
+        .catch(err => console.error("Error cargando solicitantes:", err));
 
-        selectSol.disabled = false;
-        selectSol.innerHTML = '<option value="">Cargando solicitantes...</option>';
+    // 4. Cargar TODOS los Tipos de Crédito 
+    fetch(`${baseApiUrl}tipos-credito/`)
+        .then(res => res.json())
+        .then(data => {
+            selectCred.innerHTML = '<option value="">Seleccione tipo de crédito...</option>';
+            const items = data.results ? data.results : data;
+            items.forEach(item => {
+                let opt = new Option(item.cre_descrip, item.cre_codigo);
+                selectCred.add(opt);
+            });
+        })
+        .catch(err => console.error("Error cargando tipos de crédito:", err));
 
-        // Filtramos usando el query param ?tipo_compra= que definiste en el ViewSet
-        fetch(`${baseApiUrl}solicitantes/?tipo_compra=${tipoId}`)
-            .then(res => res.json())
-            .then(data => {
-                selectSol.innerHTML = '<option value="">Seleccione solicitante...</option>';
-                
-                const items = data.results ? data.results : data;
-                items.forEach(item => {
-                    // Usamos los campos específicos de tu modelo Ocxxt006
-                    // so_nombres para el texto y so_codigo para el valor
-                    let opt = new Option(item.so_nombres, item.so_codigo);
-                    selectSol.add(opt);
-                });
-            })
-            .catch(err => console.error("Error cargando solicitantes:", err));
-    });
+
 });
 </script>
 

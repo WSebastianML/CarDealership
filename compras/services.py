@@ -1,4 +1,4 @@
-from .models import Ciatt003, Ocxxt004, Ocxxt006
+from .models import Ciatt003, Ocxxt004, Ocxxt006, Coat007
 
 def get_divisiones():
     return Ciatt003.objects.filter(co_tipfila = 'd')
@@ -11,3 +11,6 @@ def get_tipos_compra(division):
 
 def get_solicitantes():
     return Ocxxt006.objects.filter(so_estado='A')
+
+def get_tipos_credito():
+    return Coat007.objects.exclude(cre_codigo='00')

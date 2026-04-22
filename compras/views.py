@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from .serializers import Ciatt003Serializer, Ocxxt004Serializer, Ocxxt006Serializer
+from .serializers import Ciatt003Serializer, Ocxxt004Serializer, Ocxxt006Serializer, Coat007Serializer
 from . import services
 import json
 
@@ -24,6 +24,12 @@ class Ocxxt006ViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         return services.get_solicitantes()
+
+class Coat007ViewSet(viewsets.ModelViewSet):
+    serializer_class = Coat007Serializer
+
+    def get_queryset(self):
+        return services.get_tipos_credito()
 
 def compras_home(request):
     return render(request, 'compras/compras_select.html')

@@ -50,3 +50,14 @@ class Ocxxt006(models.Model):
         managed = False
         db_table = 'ocxxt006'
         unique_together = (('so_cia', 'so_codigo'),)
+
+# Tipos de credito
+class Coat007(models.Model):
+    cre_codigo = models.CharField(primary_key=True, blank=True, null=False, max_length=60)
+    cre_descrip = models.CharField(blank=True, null=True, max_length=60)
+    cre_reg = models.CharField(blank=True, null=True, max_length=60)
+    cre_estado = models.CharField(blank=True, null=True, max_length=60)
+
+    class Meta:
+        managed = False
+        db_table = 'coat007'
