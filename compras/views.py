@@ -1,35 +1,29 @@
 from rest_framework import viewsets
-from .models import Ciatt003, Ocxxt004, Ocxxt006
+from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from .serializers import Ciatt003Serializer, Ocxxt004Serializer, Ocxxt006Serializer
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from . import services
+import json
 
 class Ciatt003ViewSet(viewsets.ModelViewSet):
     serializer_class = Ciatt003Serializer
 
-    ## se obtiene el nombre de la division
     def get_queryset(self):
-        return Ciatt003.objects.filter(co_tipfila = 'd')
+        return services.get_divisiones()
 
 class Ocxxt004ViewSet(viewsets.ModelViewSet):
     serializer_class = Ocxxt004Serializer
     
     def get_queryset(self):
-        queryset = Ocxxt004.objects.filter(to_cia='e')
-        
-        division_seleccionada = self.request.query_params.get('division')
-        
-        if division_seleccionada:
-            queryset = queryset.filter(to_division=division_seleccionada)
-            
-        return queryset
+        division = self.request.query_params.get('division')
+        return services.get_tipos_compra(division=division)
 
 class Ocxxt006ViewSet(viewsets.ModelViewSet):
     serializer_class = Ocxxt006Serializer
     
     def get_queryset(self):
-        return Ocxxt006.objects.filter(so_estado='A')
+        return services.get_solicitantes()
 
 def compras_home(request):
     return render(request, 'compras/compras_select.html')
