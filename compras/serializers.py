@@ -1,22 +1,30 @@
 from rest_framework import serializers
-from .models import Ciatt003, Ocxxt004, Ocxxt006, Coat007
+from . import models
 
 class Ciatt003Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Ciatt003
+        model = models.Ciatt003
         fields = '__all__'
 
 class Ocxxt004Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Ocxxt004
+        model = models.Ocxxt004
         fields = '__all__'
 
 class Ocxxt006Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Ocxxt006
+        model = models.Ocxxt006
         fields = '__all__'
 
 class Coat007Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Coat007
+        model = models.Coat007
         fields = '__all__'
+
+class Ocxxt013Serializer(serializers.ModelSerializer):
+    ct_cuenta = serializers.ReadOnlyField(source='mc_cuenta.ct_cuenta')
+    ct_descripcion = serializers.ReadOnlyField(source='mc_cuenta.ct_descripcion')
+
+    class Meta:
+        model = models.Ocxxt013
+        fields = '__all__' 
